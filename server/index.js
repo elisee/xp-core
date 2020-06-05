@@ -100,7 +100,7 @@ function relaunchGameServer() {
   console.log("Game process started.");
 
   gameProcess.stdout.on("data", (data) => {
-    const text = data.toString("utf8");
+    const text = data.toString("utf8").trimEnd();
     if (text === "XP_GAME_STARTED") io.in("xp").emit("reloadGame");
 
     io.in("xp").emit("chat", "[GAME OUT]", text);
