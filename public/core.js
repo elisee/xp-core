@@ -6,6 +6,10 @@ let userEntries = [];
 
 const chatLogElt = $(".chatLog");
 
+socket.on("disconnect", () => {
+  document.body.innerHTML = `<div class="disconnected">You've been disconnected.</div>`;
+});
+
 socket.emit("joinCore", prompt("Enter your nickname", "guest"), (data) => {
   userEntries = data.userEntries;
   refreshUsersList();
