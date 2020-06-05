@@ -1,0 +1,15 @@
+{
+  "name": "xp-core",
+  "version": "0.1.0",
+  "main": "server/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elisee/xp-core.git"
+  },
+  "author": "Elisée MAURER <elisee@sparklinlabs.com>",
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodegit": "^0.26.5",
+    "socket.io": "^2.3.0"
+  }
+}

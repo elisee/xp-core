@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf8">
+  <title>XP</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+      font: inherit;
+    }
+
+    *[hidden] {
+      display: none !important;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      display: flex;
+      height: 100%;
+      font-family: Arial;
+      line-height: 0;
+    }
+
+    iframe {
+      flex: 1;
+      border: none;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-flow: column;
+      line-height: 1;
+      width: 300px;
+      background: #333;
+      border-left: 1px solid #666;
+      color: #eee;
+    }
+
+    .sidebar .usersList {
+      height: 200px;
+      background: #444;
+      overflow-y: scroll;
+    }
+
+    .sidebar .usersList > div {
+      padding: 0.5em;
+    }
+
+    .sidebar .chatLog {
+      flex: 1;
+      overflow-y: scroll;
+    }
+
+    .sidebar .chatLog > div {
+      padding: 0.5em;
+    }
+
+    .sidebar .chatInput {
+      display: flex;
+    }
+
+    .sidebar .chatInput textarea {
+      flex: 1;
+      height: 80px;
+      border: none;
+      background: #555;
+      padding: 0.5em;
+    }
+  </style>
+</head>
+
+<body>
+  <iframe src="game.html"></iframe>
+  <div class="sidebar">
+    <div class="usersList">
+    </div>
+    <div class="chatLog">
+    </div>
+    <div class="chatInput">
+      <textarea minlength="1" maxlength="300"></textarea>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/dom.js"></script>
+  <script src="/core.js"></script>
+</body>
+
+</html>
