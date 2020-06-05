@@ -24,7 +24,6 @@ app.post("/api/github/push/5H08B3Ica3", async (req, res) => {
 
   await updateRepo();
   relaunchGameServer();
-  io.in("xp").emit("reloadGame");
 });
 
 const server = require("http").createServer(app);
@@ -101,7 +100,10 @@ function relaunchGameServer() {
   console.log("Game process started.");
 
   gameProcess.stdout.on("data", (data) => {
-    io.in("xp").emit("chat", "[GAME OUT]", data.toString("utf8"));
+    const text = data.toString("utf8");
+    if (text === "XP_GAME_STARTED") io.in("xp").emit("reloadGame");
+
+    io.in("xp").emit("chat", "[GAME OUT]", text);
   });
 
   gameProcess.stderr.on("data", (data) => {
