@@ -50,7 +50,8 @@ chatTextArea.addEventListener("keydown", (event) => {
 });
 
 socket.on("reloadGame", () => {
-  $("iframe").contentWindow.location.reload();
+  document.body.removeChild($("iframe"));
+  document.body.insertBefore($make("iframe", { src: "//xpgame.jklm.fun" }), document.body.firstElementChild);
 });
 
 function refreshUsersList() {
