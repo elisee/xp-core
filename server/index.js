@@ -15,7 +15,7 @@ app.use("/xp-game", express.static(path.join(xpGamePath, "public")));
 
 app.use(require("body-parser").json());
 
-const { spawn } = require("child_process");
+const { execSync, spawn } = require("child_process");
 
 let gameProcess;
 
@@ -94,6 +94,9 @@ async function updateRepo() {
 
 function relaunchGameServer() {
   if (gameProcess != null && !gameProcess.kill()) throw new Error("Failed to kill game process.");
+
+  console.log("Game: npm install");
+  execSync("npm install", { cwd: xpGamePath });
 
   gameProcess = spawn("node", [xpGamePath]);
   console.log("Game process started.");
