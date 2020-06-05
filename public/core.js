@@ -31,7 +31,12 @@ socket.on("removeUserEntry", (username) => {
   chatLogElt.scrollTop = chatLogElt.scrollHeight;
 });
 
+let chatMessageCount = 0;
+const maxChatMessageCount = 200;
+
 socket.on("chat", (username, text) => {
+  chatMessageCount++;
+  if (chatMessageCount > maxChatMessageCount) chatLogElt.removeChild(chatLogElt.firstChild);
 
   $make("div", chatLogElt, { textContent: `${username}: ${text}` });
   chatLogElt.scrollTop = chatLogElt.scrollHeight;
