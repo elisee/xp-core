@@ -23,7 +23,7 @@ app.post("/api/github/push/5H08B3Ica3", async (req, res) => {
   console.log("Got a push event from GitHub!");
 
   await updateRepo();
-  relaunchGameServer();
+  restartGameServer();
 });
 
 const server = require("http").createServer(app);
@@ -90,9 +90,7 @@ async function updateRepo() {
   console.log(`Repo updated at ${repoHash}!`);
 }
 
-function relaunchGameServer() {
-  if (gameProcess != null && !gameProcess.kill()) throw new Error("Failed to kill game process.");
-
+function startGameServer() {
   console.log("Game: npm install");
   execSync("npm install", { cwd: xpGamePath });
 
@@ -114,12 +112,17 @@ function relaunchGameServer() {
     console.log(`Game process exited with code ${code}.`);
     io.in("xp").emit("chat", "[GAME EXIT]", code);
     gameProcess = null;
+    startGameServer();
   });
+}
+
+function restartGameServer() {
+  if (!gameProcess.kill()) throw new Error("Failed to kill game process.");
 }
 
 async function start() {
   await updateRepo();
-  relaunchGameServer();
+  startGameServer();
 
   server.listen(4000);
   console.log(`XP Core started in ${app.get("env")} mode.`);
