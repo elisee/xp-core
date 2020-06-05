@@ -11,7 +11,6 @@ const app = express();
 app.use(express.static(path.resolve(__dirname, "../public")));
 
 const xpGamePath = path.resolve(__dirname, "../xp-game");
-app.use("/xp-game", express.static(path.join(xpGamePath, "public")));
 
 app.use(require("body-parser").json());
 
