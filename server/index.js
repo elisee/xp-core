@@ -101,15 +101,15 @@ function relaunchGameServer() {
   console.log("Game process started.");
 
   gameProcess.stdout.on("data", (data) => {
-    io.in("xp").emit("chat", "[GAME OUT]", data);
+    io.in("xp").emit("chat", "[GAME OUT]", data.toString("utf8"));
   });
 
   gameProcess.stderr.on("data", (data) => {
-    io.in("xp").emit("chat", "[GAME ERR]", data);
+    io.in("xp").emit("chat", "[GAME ERR]", data.toString("utf8"));
   });
 
   gameProcess.on("exit", (code) => {
-    console.log(`Game process exited with code {code}.`);
+    console.log(`Game process exited with code ${code}.`);
     io.in("xp").emit("chat", "[GAME EXIT]", code);
     gameProcess = null;
   });
