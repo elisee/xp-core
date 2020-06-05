@@ -12,6 +12,15 @@ const app = express();
 app.use(express.static(path.resolve(__dirname, "../public")));
 app.use("/game", express.static(path.resolve(__dirname, "../game/public")));
 
+app.use(require("body-parser").json());
+
+app.post("/api/github/push/5H08B3Ica3", (req, res) => {
+  res.status(200).send();
+
+  console.log("Got a push event from GitHub!");
+  console.log(req.body);
+});
+
 const server = require("http").createServer(app);
 const io = require("socket.io")(server, { transports: ["websocket"] });
 
