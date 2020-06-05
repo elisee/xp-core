@@ -20,6 +20,8 @@ app.post("/api/github/push/5H08B3Ica3", async (req, res) => {
   console.log("Got a push event from GitHub!");
 
   await updateRepo();
+
+  io.in("xp").emit("reloadGame");
 });
 
 const server = require("http").createServer(app);

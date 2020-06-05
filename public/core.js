@@ -45,6 +45,10 @@ chatTextArea.addEventListener("keydown", (event) => {
   }
 });
 
+socket.on("reloadGame", () => {
+  $("iframe").contentWindow.location.reload();
+});
+
 function refreshUsersList() {
   const usersListElt = $(".usersList");
   usersListElt.innerHTML = "";
