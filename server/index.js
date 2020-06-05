@@ -15,12 +15,16 @@ app.use("/xp-game", express.static(path.join(xpGamePath, "public")));
 
 app.use(require("body-parser").json());
 
+const { spawn } = require("child_process");
+
+let gameProcess;
+
 app.post("/api/github/push/5H08B3Ica3", async (req, res) => {
   res.status(200).send();
   console.log("Got a push event from GitHub!");
 
   await updateRepo();
-
+  relaunchGameServer();
   io.in("xp").emit("reloadGame");
 });
 
@@ -88,8 +92,30 @@ async function updateRepo() {
   console.log(`Repo updated at ${repoHash}!`);
 }
 
+function relaunchGameServer() {
+  if (gameProcess != null && !gameProcess.kill()) throw new Error("Failed to kill game process.");
+
+  gameProcess = spawn("node", [xpGamePath]);
+  console.log("Game process started.");
+
+  gameProcess.stdout.on("data", (data) => {
+    io.in("xp").emit("chat", "[GAME OUT]", data);
+  });
+
+  gameProcess.stderr.on("data", (data) => {
+    io.in("xp").emit("chat", "[GAME ERR]", data);
+  });
+
+  gameProcess.on("exit", (code) => {
+    console.log(`Game process exited with code {code}.`);
+    io.in("xp").emit("chat", "[GAME EXIT]", code);
+    gameProcess = null;
+  });
+}
+
 async function start() {
   await updateRepo();
+  relaunchGameServer();
 
   server.listen(4000);
   console.log(`XP Core started in ${app.get("env")} mode.`);
