@@ -10,7 +10,10 @@ socket.on("disconnect", () => {
   document.body.innerHTML = `<div class="disconnected">You've been disconnected.</div>`;
 });
 
-socket.emit("joinCore", prompt("Enter your nickname", "guest"), (data) => {
+const username = prompt("Enter your nickname", "guest");
+loadGame();
+
+socket.emit("joinCore", username, (data) => {
   userEntries = data.userEntries;
   refreshUsersList();
 });
@@ -56,8 +59,19 @@ chatTextArea.addEventListener("keydown", (event) => {
 
 socket.on("reloadGame", () => {
   document.body.removeChild($("iframe"));
-  document.body.insertBefore($make("iframe", null, { src: "//xpgame.jklm.fun" }), document.body.firstElementChild);
+
+  loadGame();
 });
+
+function loadGame() {
+  const iframe = $make("iframe", null, { src: "//xpgame.jklm.fun" });
+  document.body.insertBefore(iframe, document.body.firstElementChild);
+
+  iframe.addEventListener("load", () => {
+    iframeWindow = iframe.contentWindow;
+    iframeWindow.postMessage(JSON.stringify({ name: "setUsername", username }), "*");
+  });
+}
 
 function refreshUsersList() {
   const usersListElt = $(".usersList");
