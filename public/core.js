@@ -63,6 +63,8 @@ socket.on("reloadGame", () => {
   loadGame();
 });
 
+let iframeWindow;
+
 function loadGame() {
   const iframe = $make("iframe", null, { src: "//xpgame.jklm.fun" });
   document.body.insertBefore(iframe, document.body.firstElementChild);
