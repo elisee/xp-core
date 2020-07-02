@@ -84,7 +84,7 @@ async function updateRepo() {
   }
 
   await repo.fetch("origin");
-  const commit = await repo.getReferenceCommit("origin/hangman");
+  const commit = await repo.getReferenceCommit("origin/tribes");
   await Git.Reset.reset(repo, commit, Git.Reset.TYPE.HARD, {});
   const repoHash = (await repo.getHeadCommit()).sha();
   console.log(`Repo updated at ${repoHash}!`);

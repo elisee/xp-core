@@ -10,13 +10,34 @@ socket.on("disconnect", () => {
   document.body.innerHTML = `<div class="disconnected">You've been disconnected.</div>`;
 });
 
-const username = prompt("Enter your nickname", "guest");
-loadGame();
+let username = localStorage.getItem("xpUsername");
+const startForm = $("form.start");
 
-socket.emit("joinCore", username, (data) => {
-  userEntries = data.userEntries;
-  refreshUsersList();
+startForm.addEventListener("submit", (event) => {
+  if (!startForm.checkValidity()) return;
+  event.preventDefault();
+
+  username = $(startForm, "input.username").value;
+  localStorage.setItem("xpUsername", username);
+  start();
 });
+
+if (username != null) {
+  start();
+}
+
+function start() {
+  $hide(startForm);
+  $show(".loading");
+  $show(".sidebar");
+
+  socket.emit("joinCore", username, (data) => {
+    userEntries = data.userEntries;
+    refreshUsersList();
+  });
+
+  loadGame();
+}
 
 socket.on("addUserEntry", (userEntry) => {
   userEntries.push(userEntry);
@@ -71,7 +92,7 @@ function loadGame() {
 
   iframe.addEventListener("load", () => {
     iframeWindow = iframe.contentWindow;
-    iframeWindow.postMessage(JSON.stringify({ name: "setUsername", username }), "*");
+    iframeWindow.postMessage(JSON.stringify({ name: "setUsername", nickname: username }), "*");
   });
 }
 
