@@ -1,5 +1,19 @@
 "use strict";
 
+// Generate a persistent user token for reconnection during a game
+function getUserToken() {
+  const existingToken = localStorage.getItem("xpUserToken");
+  if (existingToken != null && existingToken.length === 16) return existingToken;
+
+  const array = new Uint8Array(16);
+  crypto.getRandomValues(array);
+  let token = "";
+  const digits = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-";
+  for (let i = 0; i < array.length; i++) token += digits[array[i] % digits.length];
+  localStorage.setItem("xpUserToken", token);
+  return token;
+}
+
 const socket = io({ reconnection: false, transports: ["websocket"] });
 
 let userEntries = [];
@@ -10,19 +24,20 @@ socket.on("disconnect", () => {
   document.body.innerHTML = `<div class="disconnected">You've been disconnected.</div>`;
 });
 
-let username = localStorage.getItem("xpUsername");
+const userToken = getUserToken();
+let nickname = localStorage.getItem("xpNickname");
 const startForm = $("form.start");
 
 startForm.addEventListener("submit", (event) => {
   if (!startForm.checkValidity()) return;
   event.preventDefault();
 
-  username = $(startForm, "input.username").value;
-  localStorage.setItem("xpUsername", username);
+  nickname = $(startForm, "input.nickname").value;
+  localStorage.setItem("xpNickname", nickname);
   start();
 });
 
-if (username != null) {
+if (nickname != null) {
   start();
 }
 
@@ -31,7 +46,7 @@ function start() {
   $show(".loading");
   $show(".sidebar");
 
-  socket.emit("joinCore", username, (data) => {
+  socket.emit("joinCore", userToken, nickname, (data) => {
     userEntries = data.userEntries;
     refreshUsersList();
   });
@@ -43,26 +58,26 @@ socket.on("addUserEntry", (userEntry) => {
   userEntries.push(userEntry);
   refreshUsersList();
 
-  $make("div", chatLogElt, { textContent: `— ${userEntry.username} has joined.` });
+  $make("div", chatLogElt, { textContent: `— ${userEntry.nickname} has joined.` });
   chatLogElt.scrollTop = chatLogElt.scrollHeight;
 });
 
-socket.on("removeUserEntry", (username) => {
-  userEntries.splice(userEntries.findIndex(x => x.username === username), 1);
+socket.on("removeUserEntry", (nickname) => {
+  userEntries.splice(userEntries.findIndex(x => x.nickname === nickname), 1);
   refreshUsersList();
 
-  $make("div", chatLogElt, { textContent: `— ${username} has left.` });
+  $make("div", chatLogElt, { textContent: `— ${nickname} has left.` });
   chatLogElt.scrollTop = chatLogElt.scrollHeight;
 });
 
 let chatMessageCount = 0;
 const maxChatMessageCount = 200;
 
-socket.on("chat", (username, text) => {
+socket.on("chat", (nickname, text) => {
   chatMessageCount++;
   if (chatMessageCount > maxChatMessageCount) chatLogElt.removeChild(chatLogElt.firstChild);
 
-  $make("div", chatLogElt, { textContent: `${username}: ${text}` });
+  $make("div", chatLogElt, { textContent: `${nickname}: ${text}` });
   chatLogElt.scrollTop = chatLogElt.scrollHeight;
 });
 
@@ -92,7 +107,7 @@ function loadGame() {
 
   iframe.addEventListener("load", () => {
     iframeWindow = iframe.contentWindow;
-    iframeWindow.postMessage(JSON.stringify({ name: "setUsername", nickname: username }), "*");
+    iframeWindow.postMessage(JSON.stringify({ name: "setNickname", nickname: nickname }), "*");
   });
 }
 
@@ -101,6 +116,6 @@ function refreshUsersList() {
   usersListElt.innerHTML = "";
 
   for (const userEntry of userEntries) {
-    $make("div", usersListElt, { textContent: userEntry.username });
+    $make("div", usersListElt, { textContent: userEntry.nickname });
   }
 }

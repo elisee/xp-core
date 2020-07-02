@@ -30,19 +30,22 @@ const server = require("http").createServer(app);
 const io = require("socket.io")(server, { transports: ["websocket"] });
 
 const userEntries = [];
-const usersByUsername = {};
+const usersByToken = {};
 
 io.on("connect", (socket) => {
   let user;
 
-  socket.on("joinCore", (username, callback) => {
-    if (!validate.string(username, 1, 30)) return socket.disconnect(true);
+  socket.on("joinCore", (token, nickname, callback) => {
+    if (!validate.string(token, 16, 16)) return socket.disconnect(true);
+    if (!validate.string(nickname, 1, 30)) return socket.disconnect(true);
     if (!validate.function(callback)) return socket.disconnect(true);
 
-    const entry = { username };
-    user = { entry, socket };
+    if (usersByToken[token] != null) return socket.disconnect(true);
 
-    usersByUsername[entry.username] = user;
+    const entry = { nickname };
+    user = { entry, token, socket };
+
+    usersByToken[user.token] = user;
     userEntries.push(entry);
 
     callback({ userEntries });
@@ -55,14 +58,14 @@ io.on("connect", (socket) => {
     if (user == null) return;
     if (!validate.string(text, 1, 300)) return socket.disconnect(true);
 
-    io.in("xp").emit("chat", user.entry.username, text);
+    io.in("xp").emit("chat", user.entry.nickname, text);
   });
 
   socket.on("disconnect", () => {
     if (user == null) return;
 
     userEntries.splice(userEntries.indexOf(user.entry), 1);
-    io.in("xp").emit("removeUserEntry", user.entry.username);
+    io.in("xp").emit("removeUserEntry", user.entry.nickname);
   });
 });
 
