@@ -107,7 +107,7 @@ function loadGame() {
 
   iframe.addEventListener("load", () => {
     iframeWindow = iframe.contentWindow;
-    iframeWindow.postMessage(JSON.stringify({ name: "setNickname", nickname: nickname }), "*");
+    iframeWindow.postMessage(JSON.stringify({ name: "setUser", userToken, nickname }), "*");
   });
 }
 

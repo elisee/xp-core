@@ -35,17 +35,17 @@ const usersByToken = {};
 io.on("connect", (socket) => {
   let user;
 
-  socket.on("joinCore", (token, nickname, callback) => {
-    if (!validate.string(token, 16, 16)) return socket.disconnect(true);
+  socket.on("joinCore", (userToken, nickname, callback) => {
+    if (!validate.string(userToken, 16, 16)) return socket.disconnect(true);
     if (!validate.string(nickname, 1, 30)) return socket.disconnect(true);
     if (!validate.function(callback)) return socket.disconnect(true);
 
-    if (usersByToken[token] != null) return socket.disconnect(true);
+    if (usersByToken[userToken] != null) return socket.disconnect(true);
 
     const entry = { nickname };
-    user = { entry, token, socket };
+    user = { entry, userToken, socket };
 
-    usersByToken[user.token] = user;
+    usersByToken[user.userToken] = user;
     userEntries.push(entry);
 
     callback({ userEntries });
