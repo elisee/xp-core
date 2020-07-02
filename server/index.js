@@ -64,6 +64,8 @@ io.on("connect", (socket) => {
   socket.on("disconnect", () => {
     if (user == null) return;
 
+    delete usersByToken[user.userToken];
+
     userEntries.splice(userEntries.indexOf(user.entry), 1);
     io.in("xp").emit("removeUserEntry", user.entry.nickname);
   });
