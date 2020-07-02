@@ -102,6 +102,8 @@ socket.on("reloadGame", () => {
 let iframeWindow;
 
 function loadGame() {
+  $hide(".loading");
+
   const iframe = $make("iframe", null, { src: "//xpgame.jklm.fun" });
   document.body.insertBefore(iframe, document.body.firstElementChild);
 
