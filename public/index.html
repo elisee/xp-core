@@ -49,6 +49,10 @@
       justify-content: center;
     }
 
+    form.start .nickname {
+      text-align: center;
+    }
+
     .sidebar {
       display: flex;
       flex-flow: column;
@@ -97,7 +101,7 @@
 <body>
   <form class="start">
     <div>Enter your nickname:</div>
-    <div><input type="text" class="nickname" value="" required minlength="1" maxlength="30"> <button>Go!</button></div>
+    <div><input type="text" class="nickname" value="" required minlength="1" maxlength="30" autofocus> <button>Go!</button></div>
   </form>
   <div class="loading"><div>Loading...</div></div>
   <!-- iframe goes here -->
